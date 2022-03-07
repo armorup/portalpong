@@ -1,3 +1,5 @@
+// ignore_for_file: avoid_print
+
 import 'dart:async';
 
 import 'package:flame_forge2d/flame_forge2d.dart' hide Timer;
@@ -49,25 +51,21 @@ class PortalPongGame extends Forge2DGame with TapDetector {
   Server? server; // null if this user is not game host
   Client? client;
   Player? player;
-  final Map<String, Player> _players = <String, Player>{};
-  final StreamController<Map<String, Player>> _controller =
-      StreamController<Map<String, Player>>();
+  final _players = <String, Player>{};
+  final _controller = StreamController<Map<String, Player>>();
 
   Stream<List<Player>> get playersStream => _controller.stream.map(
         (playersMap) => playersMap.values.toList(),
       );
 
-  void addPlayer(Player player) {
+  /// Called when player information is received from stream
+  void updatePlayer(Player player) {
     String name = player.name;
-    if (this.player!.name == name) {
-      // Update current player only if players list doesn't contain it
-      if (!_players.containsKey(name)) {
-        _players.putIfAbsent(name, () => player);
-      }
-    } else {
-      _players.putIfAbsent(name, () => player);
-      _controller.add(_players);
-    }
+    // Update current player only if players list doesn't contain it
+    if (this.player!.name == name && _players.containsKey(name)) return;
+    _players.putIfAbsent(name, () => player);
+    _controller.sink.add(_players);
+    print(_players);
   }
 
   Paddle? paddle;
