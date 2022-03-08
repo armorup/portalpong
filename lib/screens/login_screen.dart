@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:portalpong/game.dart';
 import 'package:portalpong/network/network.dart';
-import 'package:portalpong/player.dart';
+import 'package:portalpong/models/player.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({Key? key}) : super(key: key);
@@ -86,7 +86,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
   void login(BuildContext context) {
     // TODO: Valid player name?  New login?
-    game.player = Player(name);
+    game.addPlayer(name);
     // Poll the network to get ip
     network.poll();
     context.push('/join');

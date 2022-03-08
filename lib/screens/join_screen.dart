@@ -16,54 +16,50 @@ class JoinScreen extends StatelessWidget {
       body: SafeArea(
         child: Padding(
           padding: const EdgeInsets.all(8.0),
-          child: Column(
-            children: [
-              Container(
-                padding: const EdgeInsets.all(10),
-                width: MediaQuery.of(context).size.width,
-                height: MediaQuery.of(context).size.height - 40,
-                decoration: BoxDecoration(
-                  border: Border.all(color: Colors.blueAccent),
+          child: Container(
+            padding: const EdgeInsets.all(10),
+            width: MediaQuery.of(context).size.width,
+            height: MediaQuery.of(context).size.height * 0.9,
+            decoration: BoxDecoration(
+              border: Border.all(color: Colors.blueAccent),
+            ),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Avatar(
+                  name: game.player!.name,
                 ),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Avatar(
-                      name: game.player!.name,
-                    ),
-                    const SizedBox(height: 50),
-                    ElevatedButton(
-                      onPressed: (game.server != null)
-                          ? null
-                          : () async {
-                              game.server = Server();
-                              await game.server!.start();
-                              joinGame();
-                              context.push('/wait');
-                            },
-                      child: const Text('Host Game'),
-                    ),
-                    ElevatedButton(
-                      child: const Text('Join Game'),
-                      onPressed: (game.client == null)
-                          ? () async {
-                              joinGame();
-                              context.push('/wait');
-                            }
-                          : null,
-                    ),
-                    ElevatedButton(
-                      child: const Text('Logout'),
-                      onPressed: (game.client == null)
-                          ? () async {
-                              context.pop();
-                            }
-                          : null,
-                    ),
-                  ],
+                const SizedBox(height: 50),
+                ElevatedButton(
+                  onPressed: (game.server != null)
+                      ? null
+                      : () async {
+                          game.server = Server();
+                          await game.server!.start();
+                          joinGame();
+                          context.push('/wait');
+                        },
+                  child: const Text('Host Game'),
                 ),
-              ),
-            ],
+                ElevatedButton(
+                  child: const Text('Join Game'),
+                  onPressed: (game.client == null)
+                      ? () async {
+                          joinGame();
+                          context.push('/wait');
+                        }
+                      : null,
+                ),
+                ElevatedButton(
+                  child: const Text('Logout'),
+                  onPressed: (game.client == null)
+                      ? () async {
+                          context.pop();
+                        }
+                      : null,
+                ),
+              ],
+            ),
           ),
         ),
       ),
@@ -72,6 +68,6 @@ class JoinScreen extends StatelessWidget {
 
   void joinGame() {
     game.client = Client();
-    game.client!.connect();
+    game.client!.start();
   }
 }

@@ -10,7 +10,7 @@ import 'package:portalpong/game_objects/balls.dart';
 import 'package:portalpong/network/client.dart';
 import 'package:portalpong/network/server.dart';
 import 'package:portalpong/game_objects/paddle.dart';
-import 'package:portalpong/player.dart';
+import 'package:portalpong/models/player.dart';
 import 'game_objects/boundaries.dart';
 import 'package:flame/components.dart';
 import 'package:flame/input.dart';
@@ -48,25 +48,20 @@ class GameLoader extends StatelessWidget {
 class PortalPongGame extends Forge2DGame with TapDetector {
   PortalPongGame() : super(gravity: Vector2(0, 0));
 
-  Server? server; // null if this user is not game host
+  Server? server; // null if this user is not the game host
   Client? client;
   Player? player;
-  final _players = <String, Player>{};
+  final players = <String, Player>{};
   final _controller = StreamController<Map<String, Player>>();
+
+  void addPlayer(String name) {
+    player = Player(name);
+    players.putIfAbsent(name, () => player!);
+  }
 
   Stream<List<Player>> get playersStream => _controller.stream.map(
         (playersMap) => playersMap.values.toList(),
       );
-
-  /// Called when player information is received from stream
-  void updatePlayer(Player player) {
-    String name = player.name;
-    // Update current player only if players list doesn't contain it
-    if (this.player!.name == name && _players.containsKey(name)) return;
-    _players.putIfAbsent(name, () => player);
-    _controller.sink.add(_players);
-    print(_players);
-  }
 
   Paddle? paddle;
   late Body groundBody;
