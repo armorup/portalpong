@@ -1,19 +1,21 @@
-import 'dart:convert';
-
 import 'package:avatars/avatars.dart';
-import 'package:faker/faker.dart';
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
 import 'package:portalpong/game.dart';
+import 'package:portalpong/game_state.dart';
 import 'package:portalpong/models/player.dart';
+import 'package:portalpong/network/network.dart';
 
-class WaitingScreen extends StatefulWidget {
-  const WaitingScreen({Key? key}) : super(key: key);
+class WaitScreen extends StatefulWidget {
+  const WaitScreen({required this.game, Key? key}) : super(key: key);
+  final PortalPongGame game;
+
   @override
-  State<WaitingScreen> createState() => _WaitingScreenState();
+  State<WaitScreen> createState() => _WaitScreenState();
 }
 
-class _WaitingScreenState extends State<WaitingScreen> {
+class _WaitScreenState extends State<WaitScreen> {
+  var stream = net.client!.players.stream;
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -25,7 +27,7 @@ class _WaitingScreenState extends State<WaitingScreen> {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               StreamBuilder(
-                  stream: game.client!.players.stream,
+                  stream: stream,
                   initialData: [game.player!],
                   builder: (context, snapshot) {
                     if (snapshot.hasData) {
@@ -33,8 +35,9 @@ class _WaitingScreenState extends State<WaitingScreen> {
                       return Expanded(
                         child: ListView.builder(
                           itemCount: players.length,
-                          itemBuilder: (context, i) =>
-                              Avatar(name: players[i].name),
+                          itemBuilder: (context, i) {
+                            return Avatar(name: players[i].name);
+                          },
                         ),
                       );
                     } else {
@@ -42,25 +45,21 @@ class _WaitingScreenState extends State<WaitingScreen> {
                     }
                   }),
               const SizedBox(height: 50),
-              if (game.server != null)
+              if (net.server != null)
                 ElevatedButton(
                     onPressed: () {
-                      context.go('/game');
+                      game.player!.launch = true;
+                      net.client!.writePlayer(game.player!);
+                      game.player!.launch = false;
+                      GameState.playState = PlayState.inGame;
+                      launch();
                     },
                     child: const Text('Launch!')),
               ElevatedButton(
                 onPressed: () async {
                   cancel();
-                  context.pop();
                 },
                 child: const Text('Cancel'),
-              ),
-              ElevatedButton(
-                onPressed: () async {
-                  game.client!.push(
-                      jsonEncode(Player(faker.person.firstName()).toJson()));
-                },
-                child: const Text('Add'),
               ),
             ],
           ),
@@ -69,12 +68,19 @@ class _WaitingScreenState extends State<WaitingScreen> {
     );
   }
 
+  void launch() {
+    game.overlays.remove('wait');
+  }
+
   void cancel() async {
     // stop the server if it exists
-    await game.server?.cancel();
-    game.server = null;
+    await net.server?.cancel();
+    net.server = null;
     // stop trying to join
-    await game.client?.cancel();
-    game.client = null;
+    await net.client?.cancel();
+    net.client = null;
+
+    game.overlays.add('join');
+    game.overlays.remove('wait');
   }
 }

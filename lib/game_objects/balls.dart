@@ -14,10 +14,11 @@ class Ball extends BodyComponent {
   static const double _minNudgeRest = 2.0;
 
   final Paint _blue = BasicPalette.blue.paint();
+  final Paint _black = BasicPalette.black.paint();
 
   Ball(this._position, {this.radius = 2}) {
     originalPaint = randomPaint();
-    paint = _blue;
+    paint = _black;
   }
 
   Paint randomPaint() => PaintExtension.random(withAlpha: 0.9, base: 100);
@@ -28,9 +29,9 @@ class Ball extends BodyComponent {
     shape.radius = radius;
 
     final fixtureDef = FixtureDef(shape)
-      ..restitution = 1.05
+      ..restitution = 0.8
       ..density = 1.0
-      ..friction = 0.0;
+      ..friction = 0.1;
 
     final bodyDef = BodyDef()
       // To be able to determine object in collision

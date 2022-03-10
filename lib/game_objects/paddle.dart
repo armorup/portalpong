@@ -6,31 +6,37 @@ import 'package:flame/palette.dart';
 class Paddle extends BodyComponent {
   final double radius;
   Vector2 position;
-
+  late FixtureDef fixtureDef;
+  late CircleShape shape;
   final Paint _blue = BasicPalette.blue.paint();
   final Paint _red = BasicPalette.red.paint();
 
   Paddle(this.position, {this.radius = 4}) {
+    paint = _blue;
+    shape = CircleShape()..radius = radius;
+    fixtureDef = FixtureDef(shape);
+  }
+
+  Paddle.other(this.position, {this.radius = 4}) {
     paint = _red;
+    shape = CircleShape()..radius = radius;
+    fixtureDef = FixtureDef(shape);
+    fixtureDef.isSensor = true;
   }
 
   @override
   Body createBody() {
-    final shape = CircleShape();
-    shape.radius = radius;
-
-    final fixtureDef = FixtureDef(shape)
-      ..restitution = 1.0
-      ..density = 1.0
-      ..friction = 0.0;
-
+    fixtureDef
+      ..restitution = 0.5
+      ..density = 30.0
+      ..filter.groupIndex = -1
+      ..friction = 1.0;
     final bodyDef = BodyDef()
       // To be able to determine object in collision
       ..userData = this
-      ..angularDamping = 0.8
+      ..angularDamping = 1.0
       ..position = position
-      ..type = BodyType.kinematic;
-
+      ..type = BodyType.dynamic;
     body = world.createBody(bodyDef)..createFixture(fixtureDef);
     return body;
   }

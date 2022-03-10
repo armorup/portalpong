@@ -1,13 +1,14 @@
 import 'package:avatars/avatars.dart';
 import 'package:faker/faker.dart';
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
 import 'package:portalpong/game.dart';
-import 'package:portalpong/network/network.dart';
 import 'package:portalpong/models/player.dart';
+import 'package:portalpong/network/network.dart';
 
 class LoginScreen extends StatefulWidget {
-  const LoginScreen({Key? key}) : super(key: key);
+  const LoginScreen({required this.game, Key? key}) : super(key: key);
+
+  final PortalPongGame game;
 
   @override
   _LoginScreenState createState() => _LoginScreenState();
@@ -86,22 +87,11 @@ class _LoginScreenState extends State<LoginScreen> {
 
   void login(BuildContext context) {
     // TODO: Valid player name?  New login?
-    game.addPlayer(name);
+    game.player = Player(name);
     // Poll the network to get ip
-    network.poll();
-    context.push('/join');
+    net.poll();
+    game.overlays.add('join');
+    game.overlays.remove('login');
+    //context.push('/join');
   }
-
-  // void _sendMessage() {
-  //   if (_controller.text.isNotEmpty) {
-  //     client!.channel!.sink.add(_controller.text);
-  //   }
-  // }
-
-  // @override
-  // void dispose() {
-  //   client!.channel!.sink.close();
-  //   _controller.dispose();
-  //   super.dispose();
-  // }
 }

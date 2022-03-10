@@ -6,7 +6,7 @@ import 'package:forge2d/forge2d.dart';
 import 'package:flutter/material.dart' hide Draggable;
 
 List<Wall> createBoundaries(Forge2DGame game) {
-  double offset = 10;
+  double offset = 0;
   final topLeft = game.screenToWorld(Vector2.all(offset)); //Vector2.zero();
   final bottomRight = game.screenToWorld(
       game.camera.viewport.effectiveSize - Vector2.all(offset * 2));
@@ -33,7 +33,7 @@ class Wall extends BodyComponent {
 
     final fixtureDef = FixtureDef(shape)
       ..restitution = 0.0
-      ..friction = 0.3;
+      ..friction = 0.0;
 
     final bodyDef = BodyDef()
       ..userData = this // To be able to determine object in collision

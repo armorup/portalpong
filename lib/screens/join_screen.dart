@@ -1,13 +1,14 @@
 import 'package:avatars/avatars.dart';
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
 import 'package:portalpong/game.dart';
 import 'package:portalpong/network/client.dart';
+import 'package:portalpong/network/network.dart';
 
 import '../network/server.dart';
 
 class JoinScreen extends StatelessWidget {
-  const JoinScreen({Key? key}) : super(key: key);
+  const JoinScreen({required this.game, Key? key}) : super(key: key);
+  final PortalPongGame game;
 
   @override
   Widget build(BuildContext context) {
@@ -31,32 +32,24 @@ class JoinScreen extends StatelessWidget {
                 ),
                 const SizedBox(height: 50),
                 ElevatedButton(
-                  onPressed: (game.server != null)
+                  onPressed: (net.server != null)
                       ? null
                       : () async {
-                          game.server = Server();
-                          await game.server!.start();
-                          joinGame();
-                          context.push('/wait');
+                          await hostGame();
                         },
                   child: const Text('Host Game'),
                 ),
                 ElevatedButton(
                   child: const Text('Join Game'),
-                  onPressed: (game.client == null)
+                  onPressed: (net.client == null)
                       ? () async {
                           joinGame();
-                          context.push('/wait');
                         }
                       : null,
                 ),
                 ElevatedButton(
                   child: const Text('Logout'),
-                  onPressed: (game.client == null)
-                      ? () async {
-                          context.pop();
-                        }
-                      : null,
+                  onPressed: (net.client == null) ? logout : null,
                 ),
               ],
             ),
@@ -66,8 +59,21 @@ class JoinScreen extends StatelessWidget {
     );
   }
 
+  void logout() {
+    game.overlays.add('login');
+    game.overlays.remove('join');
+  }
+
+  Future<void> hostGame() async {
+    net.server = Server();
+    await net.server!.start();
+    joinGame();
+  }
+
   void joinGame() {
-    game.client = Client();
-    game.client!.start();
+    net.client = Client();
+    net.client!.start();
+    game.overlays.add('wait');
+    game.overlays.remove('join');
   }
 }

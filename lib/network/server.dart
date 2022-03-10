@@ -27,7 +27,7 @@ class Server {
   Future<void> cancel() async {
     udp.cancel();
     ws.cancel();
-    print('Stopped @ ws://${network.ip}:${network.port}');
+    print('Stopped @ ws://${net.ip}:${net.port}');
   }
 }
 
@@ -61,8 +61,8 @@ class WSServer {
 
   // start websocket server
   Future<void> start() async {
-    http = await shelf_io.serve(handler, network.ip, network.port);
-    print('Serving @ ws://${network.ip}:${network.port}');
+    http = await shelf_io.serve(handler, net.ip, net.port);
+    print('Serving @ ws://${net.ip}:${net.port}');
   }
 
   // ensure server shuts down correctly
@@ -82,7 +82,7 @@ class UDPServer {
   late StreamSubscription _udpSub;
   late RawDatagramSocket _udpSocket;
   UDPServer({this.port = 0}) {
-    port = network.port;
+    port = net.port;
   }
 
   /// Broadcast server to listen for join requests
