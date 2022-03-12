@@ -1,15 +1,15 @@
 // ignore_for_file: avoid_print
 
 import 'dart:async';
+import 'dart:convert';
 
-import 'package:flame_forge2d/body_component.dart';
-import 'package:flame_forge2d/contact_callbacks.dart';
 import 'package:flame_forge2d/flame_forge2d.dart' hide Timer;
 import 'package:flame_forge2d/forge2d_game.dart';
 import 'package:flutter/material.dart' hide Draggable;
 import 'package:flame/game.dart';
 import 'package:portalpong/game_objects/balls.dart';
 import 'package:portalpong/game_objects/paddle.dart';
+import 'package:portalpong/game_objects/portal.dart';
 import 'package:portalpong/models/player.dart';
 import 'package:portalpong/network/network.dart';
 import 'package:portalpong/screens/join_screen.dart';
@@ -18,7 +18,6 @@ import 'package:portalpong/screens/wait_screen.dart';
 import 'game_objects/boundaries.dart';
 import 'package:flame/components.dart';
 import 'package:flame/input.dart';
-import 'package:flame/palette.dart';
 
 /// One instance of the game
 PortalPongGame game = PortalPongGame();
@@ -48,24 +47,26 @@ class GameLoader extends StatelessWidget {
           'login': (context, PortalPongGame game) => LoginScreen(game: game),
           'join': (context, PortalPongGame game) => JoinScreen(game: game),
           'wait': (context, PortalPongGame game) => WaitScreen(game: game),
-          'game': (context, PortalPongGame game) => JoinScreen(game: game),
         },
       ),
     );
   }
 }
 
+enum GameState { joining, playing }
+
 /// The game
 class PortalPongGame extends Forge2DGame with MultiTouchDragDetector {
-  PortalPongGame() : super(gravity: Vector2(0, 0)) {
-    othersSub = othersUpdate();
-  }
+  PortalPongGame() : super(gravity: Vector2(0, 0));
 
   Player? player;
   late Paddle paddle;
+  Portal? portal;
+  GameState state = GameState.joining;
+
   // Map player name with their paddle
-  Map<String, Paddle> otherPlayers = {};
-  StreamSubscription? othersSub;
+  //Map<String, Paddle> otherPlayers = {};
+  //StreamSubscription<List<Player>>? sub;
 
   late Ball ball;
   late SpriteComponent background;
@@ -74,47 +75,84 @@ class PortalPongGame extends Forge2DGame with MultiTouchDragDetector {
   late Body groundBody;
   MouseJoint? mouseJoint;
 
-  StreamSubscription? othersUpdate() {
-    if (net.client == null) return null;
-    Stream<List<Player>> stream = net.client!.players.stream;
-    final center = screenToWorld(camera.viewport.effectiveSize / 2);
-    return stream.listen((players) {
-      for (var player in players) {
-        String name = player.name;
-        Paddle paddle = otherPlayers.putIfAbsent(name, () => Paddle(center));
-        paddle.body.applyLinearImpulse(player.velocity);
-      }
-    });
-  }
-
   @override
   Future<void> onLoad() async {
     await super.onLoad();
-
-    await setup();
-    add(background);
-    add(ball);
-    add(paddle);
-
     overlays.add('login');
-    // var pos = screenToWorld(Vector2(0, 30));
-    // var width = screenToWorld(camera.viewport.effectiveSize).x;
-    //add(Portal(position: pos, width: width));
-    //addContactCallback(PortalContactCallback());
   }
 
+  void startGame() async {
+    await setup();
+    add(background);
+    add(paddle);
+    if (portal != null) {
+      add(portal!);
+    }
+    state = GameState.playing;
+  }
+
+  // void updateOthers() {
+  //   final center = screenToWorld(camera.viewport.effectiveSize / 2);
+  //   sub = net.client!.playersList.stream.listen((players) {
+  //     for (var player in players) {
+  //       String name = player.name;
+  //       var x = player.x;
+  //       var y = player.y;
+  //       Paddle paddle;
+  //       if (!otherPlayers.containsKey(name)) {
+  //         paddle = otherPlayers.putIfAbsent(name, () => Paddle.other(center));
+  //         add(paddle);
+  //       }
+  //       paddle = otherPlayers[name]!;
+  //       paddle.body.applyLinearImpulse(Vector2(x, y));
+  //     }
+  //   });
+  // }
+
   Future<void> setup() async {
-    final boundaries = createBoundaries(this);
-    boundaries.forEach(add);
+    // Background
     final bgSprite = await Sprite.load('background.png');
     background = SpriteComponent(sprite: bgSprite);
     groundBody = world.createBody(BodyDef());
-    final center = screenToWorld(camera.viewport.effectiveSize / 2);
-    ball = Ball(center);
-    paddle = Paddle(center);
-    // Add others with stream?
 
-    //others.add(Paddle.other(center));
+    // If other player exists, add a portal
+    bool topBoundary = true;
+    var players = net.client!.playersList.players;
+    if (players.length > 1) {
+      topBoundary = false;
+      var portalOwner = net.client!.playersList.players
+          .firstWhere((other) => other.name != player!.name);
+      // Add opponent portals
+      var portalPos = screenToWorld(Vector2(0, 30));
+      var portalwidth = screenToWorld(camera.viewport.effectiveSize).x;
+      portal = Portal(
+        owner: portalOwner,
+        position: portalPos,
+        width: portalwidth,
+      );
+      addContactCallback(PortalContactCallback());
+    }
+
+    final boundaries = createBoundaries(this, top: topBoundary);
+    boundaries.forEach(add);
+    final center = screenToWorld(camera.viewport.effectiveSize / 2);
+    paddle = Paddle(center - Vector2(0, 20));
+
+    if (player!.whoHasBall == player!.name) {
+      player!.xVel = center.x;
+      player!.yVel = center.y;
+      var impulse = Vector2.zero();
+      addBall(center, impulse);
+    }
+  }
+
+  void removeBall() {
+    remove(ball);
+  }
+
+  void addBall(Vector2 pos, Vector2 impulse) {
+    ball = Ball(pos, impulse);
+    add(ball);
   }
 
   @override
@@ -139,6 +177,8 @@ class PortalPongGame extends Forge2DGame with MultiTouchDragDetector {
       ..bodyB = paddle.body;
     mouseJoint ??= world.createJoint(mouseJointDef) as MouseJoint;
     mouseJoint?.setTarget(info.eventPosition.game);
+
+    //updateServer();
     return false;
   }
 
@@ -149,55 +189,15 @@ class PortalPongGame extends Forge2DGame with MultiTouchDragDetector {
     mouseJoint = null;
     paddle.body.applyLinearImpulse(-paddle.body.linearVelocity * 1500);
     dragValid = false;
+
+    //updateServer();
     return false;
   }
-}
 
-///
-class Portal extends BodyComponent {
-  final Vector2 position;
-  final double width;
-  final double height;
-  final Paint _black = BasicPalette.black.paint();
-
-  late List<Vector2> vertices;
-  Portal({required this.position, required this.width, this.height = 3}) {
-    vertices = [
-      Vector2(0, 0),
-      Vector2(width, 0),
-      Vector2(width, height),
-      Vector2(0, height),
-    ];
+  void updateServer() {
+    // Update server
+    player!.xVel = paddle.body.linearVelocity.x;
+    player!.yVel = paddle.body.linearVelocity.y;
+    net.client?.write(jsonEncode(player!.toJson()));
   }
-
-  @override
-  Body createBody() {
-    final shape = PolygonShape();
-    shape.set(vertices);
-
-    final fixtureDef = FixtureDef(shape)..isSensor = true;
-
-    final bodyDef = BodyDef()
-      // To be able to determine object in collisio
-      ..userData = this
-      ..position = position
-      ..type = BodyType.static;
-
-    body = world.createBody(bodyDef)..createFixture(fixtureDef);
-    body.applyLinearImpulse(Vector2.random().normalized() * 1000);
-    return body;
-  }
-
-  @override
-  void renderPolygon(Canvas canvas, List<Offset> points) {
-    super.renderPolygon(canvas, points);
-  }
-}
-
-class PortalContactCallback extends ContactCallback<Portal, Ball> {
-  @override
-  void begin(Portal a, Ball b, Contact contact) {}
-
-  @override
-  void end(Portal a, Ball b, Contact contact) {}
 }

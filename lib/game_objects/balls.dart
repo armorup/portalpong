@@ -10,13 +10,14 @@ class Ball extends BodyComponent {
   bool giveNudge = false;
   final double radius;
   final Vector2 _position;
+  final Vector2 _impulse;
   double _timeSinceNudge = 0.0;
   static const double _minNudgeRest = 2.0;
 
   final Paint _blue = BasicPalette.blue.paint();
   final Paint _black = BasicPalette.black.paint();
 
-  Ball(this._position, {this.radius = 2}) {
+  Ball(this._position, this._impulse, {this.radius = 2}) {
     originalPaint = randomPaint();
     paint = _black;
   }
@@ -41,7 +42,7 @@ class Ball extends BodyComponent {
       ..type = BodyType.dynamic;
 
     body = world.createBody(bodyDef)..createFixture(fixtureDef);
-    body.applyLinearImpulse(Vector2.random().normalized() * 1000);
+    body.applyLinearImpulse(_impulse);
     return body;
   }
 
@@ -63,45 +64,5 @@ class Ball extends BodyComponent {
         _timeSinceNudge = 0.0;
       }
     }
-  }
-}
-
-class DraggableBall extends Ball with Draggable {
-  DraggableBall(Vector2 position) : super(position, radius: 5) {
-    originalPaint = Paint()..color = Colors.amber;
-    paint = originalPaint;
-  }
-
-  @override
-  bool onDragStart(int pointerId, DragStartInfo info) {
-    paint = randomPaint();
-    return true;
-  }
-
-  @override
-  bool onDragUpdate(int pointerId, DragUpdateInfo info) {
-    final worldDelta = Vector2(1, -1)..multiply(info.delta.game);
-    body.applyLinearImpulse(worldDelta * 1000);
-    return true;
-  }
-
-  @override
-  bool onDragEnd(int pointerId, DragEndInfo info) {
-    paint = originalPaint;
-    return true;
-  }
-}
-
-class TappableBall extends Ball with Tappable {
-  TappableBall(Vector2 position) : super(position) {
-    originalPaint = BasicPalette.white.paint();
-    paint = originalPaint;
-  }
-
-  @override
-  bool onTapDown(info) {
-    body.applyLinearImpulse(Vector2.random() * 1000);
-    paint = randomPaint();
-    return false;
   }
 }

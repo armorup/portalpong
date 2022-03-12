@@ -1,4 +1,3 @@
-import 'package:flame_forge2d/flame_forge2d.dart';
 import 'package:json_annotation/json_annotation.dart';
 
 part 'player.g.dart';
@@ -6,23 +5,25 @@ part 'player.g.dart';
 @JsonSerializable()
 class Player {
   String name;
-
-  //TODO refactor to network data
   bool launch;
-  double x;
-  double y;
+  int dropTime;
+
+  String whoHasBall; // Which player has the ball?
+  bool ballIsEntering; // is the ball entering the play area?
+  double posFromStart;
+  double xVel; // ball x velocity
+  double yVel; // ball y velocity
+
   Player(
     this.name, {
-    this.x = 0,
-    this.y = 0,
+    this.posFromStart = 0,
+    this.xVel = 0,
+    this.yVel = 0,
     this.launch = false,
+    this.dropTime = 2,
+    this.whoHasBall = '',
+    this.ballIsEntering = false,
   });
-  set velocity(Vector2 velocity) {
-    x = velocity.x;
-    y = velocity.y;
-  }
-
-  Vector2 get velocity => Vector2(x, y);
 
   factory Player.fromJson(Map<String, dynamic> json) => _$PlayerFromJson(json);
   Map<String, dynamic> toJson() => _$PlayerToJson(this);

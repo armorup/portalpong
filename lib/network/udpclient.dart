@@ -32,10 +32,17 @@ class UDPClient {
           String address = datagram.address.address;
           int port = datagram.port;
           connectTo(address, port);
+          _udpSub!.cancel();
         }
       },
-      onError: (e) => udpSocket.close(),
-      onDone: () => udpSocket.close(),
+      onError: (e) {
+        print(e);
+        udpSocket.close();
+      },
+      onDone: () {
+        print('done');
+        udpSocket.close();
+      },
     );
 
     udpSocket.send(joinKey.codeUnits, net.broadcastIP, net.port);

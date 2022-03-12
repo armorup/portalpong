@@ -3,9 +3,13 @@ import 'package:flame_forge2d/flame_forge2d.dart';
 import 'package:flame_forge2d/forge2d_game.dart';
 import 'package:forge2d/forge2d.dart';
 
-import 'package:flutter/material.dart' hide Draggable;
-
-List<Wall> createBoundaries(Forge2DGame game) {
+List<Wall> createBoundaries(
+  Forge2DGame game, {
+  bool top = true,
+  bool left = true,
+  bool bottom = true,
+  bool right = true,
+}) {
   double offset = 0;
   final topLeft = game.screenToWorld(Vector2.all(offset)); //Vector2.zero();
   final bottomRight = game.screenToWorld(
@@ -13,12 +17,14 @@ List<Wall> createBoundaries(Forge2DGame game) {
   final topRight = Vector2(bottomRight.x, topLeft.y);
   final bottomLeft = Vector2(topLeft.x, bottomRight.y);
 
-  return [
-    Wall(topLeft, topRight),
-    Wall(topRight, bottomRight),
-    Wall(bottomRight, bottomLeft),
-    Wall(bottomLeft, topLeft),
+  List<Wall> walls = [
+    if (top) Wall(topLeft, topRight),
+    if (right) Wall(topRight, bottomRight),
+    if (bottom) Wall(bottomRight, bottomLeft),
+    if (left) Wall(bottomLeft, topLeft),
   ];
+
+  return walls;
 }
 
 class Wall extends BodyComponent {

@@ -10,23 +10,29 @@ import 'package:shelf_web_socket/shelf_web_socket.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
 
 class Server {
-  late UDPServer udp;
-  late WSServer ws;
+  late UDPServer _udp;
+  late WSServer _ws;
 
-  Server()
-      : udp = UDPServer(),
-        ws = WSServer();
+  // Singleton server
+  static Server? _server;
+  factory Server() {
+    _server ??= Server._internal();
+    return _server!;
+  }
+  Server._internal()
+      : _udp = UDPServer(),
+        _ws = WSServer();
 
   /// Start the servers
   Future<void> start() async {
-    await udp.start(); // Listen to join request
-    await ws.start(); // Start the main server
+    await _udp.start(); // Listen to join request
+    await _ws.start(); // Start the main server
   }
 
   // stop the server
   Future<void> cancel() async {
-    udp.cancel();
-    ws.cancel();
+    _udp.cancel();
+    _ws.cancel();
     print('Stopped @ ws://${net.ip}:${net.port}');
   }
 }
@@ -55,9 +61,6 @@ class WSServer {
       wsSubs.add(wsSub);
     });
   }
-
-  // The callback when stream is listened to
-  void callback(message) {}
 
   // start websocket server
   Future<void> start() async {

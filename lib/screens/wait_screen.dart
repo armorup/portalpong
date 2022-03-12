@@ -1,7 +1,9 @@
+import 'dart:async';
+import 'dart:convert';
+
 import 'package:avatars/avatars.dart';
 import 'package:flutter/material.dart';
 import 'package:portalpong/game.dart';
-import 'package:portalpong/game_state.dart';
 import 'package:portalpong/models/player.dart';
 import 'package:portalpong/network/network.dart';
 
@@ -14,10 +16,11 @@ class WaitScreen extends StatefulWidget {
 }
 
 class _WaitScreenState extends State<WaitScreen> {
-  var stream = net.client!.players.stream;
-
+  var stream = net.client!.playersList.stream.asBroadcastStream();
+  StreamSubscription<List<Player>>? sub;
   @override
   Widget build(BuildContext context) {
+    startLaunchListener(stream);
     return Scaffold(
       backgroundColor: Theme.of(context).backgroundColor,
       body: SafeArea(
@@ -49,10 +52,12 @@ class _WaitScreenState extends State<WaitScreen> {
                 ElevatedButton(
                     onPressed: () {
                       game.player!.launch = true;
-                      net.client!.writePlayer(game.player!);
-                      game.player!.launch = false;
-                      GameState.playState = PlayState.inGame;
-                      launch();
+                      // The player who clicks this button starts with ball
+                      game.player!.whoHasBall = game.player!.name;
+                      net.client!.write(jsonEncode(game.player!.toJson()));
+                      //game.player!.launch = false;
+                      game.startGame();
+                      game.overlays.remove('wait');
                     },
                     child: const Text('Launch!')),
               ElevatedButton(
@@ -68,8 +73,27 @@ class _WaitScreenState extends State<WaitScreen> {
     );
   }
 
-  void launch() {
-    game.overlays.remove('wait');
+  void startLaunchListener(Stream<List<Player>> stream) {
+    sub ??= stream.listen((players) {
+      for (var player in players) {
+        print(player.launch);
+        if (player.launch) {
+          game.startGame();
+          game.overlays.remove('wait');
+          sub!.pause();
+          break;
+        }
+      }
+    });
+    if (sub!.isPaused) sub!.resume();
+  }
+
+  @override
+  void dispose() {
+    // TODO: implement dispose
+    sub!.cancel();
+    sub = null;
+    super.dispose();
   }
 
   void cancel() async {
