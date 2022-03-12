@@ -22,7 +22,7 @@ class PlayersList {
   void updateList(Player player) {
     _players.update(
       player.name,
-      (value) => value,
+      (value) => player,
       ifAbsent: () => player,
     );
     _controller.sink.add(_players);

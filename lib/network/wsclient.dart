@@ -18,18 +18,14 @@ class WSClient {
   /// Connect and begin listening
   Future<void> connectTo(String address, int port) async {
     channel = WebSocketChannel.connect(Uri.parse('ws://$address:$port'));
-    _sub = channel!.stream.asBroadcastStream().listen(
-          (json) => callback(json),
-        );
+    _sub = channel!.stream.asBroadcastStream().listen((json) => callback(json));
     // add current player
     write(jsonEncode(game.player!.toJson()));
     print('${game.player!.name} joined @$address:$port');
   }
 
   /// Write data to ws stream
-  void write(json) {
-    channel!.sink.add(json);
-  }
+  void write(json) => channel!.sink.add(json);
 
   void cancel() {
     _sub?.cancel();

@@ -67,13 +67,17 @@ class Client {
       pingPlayers();
     }
 
+    game.player!.whoHasBall = player.whoHasBall;
     if (game.state == GameState.playing && game.portal != null) {
+      print('1');
       if (game.player!.whoHasBall == game.player!.name) {
+        print('2');
         var impulse = Vector2(-player.xVel, -player.yVel);
         var x =
             game.portal!.position.x + game.portal!.width * player.posFromStart;
         var y = game.portal!.position.y;
-        var pos = Vector2(x, y);
+        var pos = Vector2(10, -10); //Vector2(x, y);
+        print('$pos:$impulse');
         game.addBall(pos, impulse);
       }
     }

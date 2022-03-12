@@ -9,7 +9,8 @@ class Player {
   int dropTime;
 
   String whoHasBall; // Which player has the ball?
-  bool ballIsEntering; // is the ball entering the play area?
+  bool entering; // is the ball entering the play area?
+  bool exiting;
   double posFromStart;
   double xVel; // ball x velocity
   double yVel; // ball y velocity
@@ -22,7 +23,8 @@ class Player {
     this.launch = false,
     this.dropTime = 2,
     this.whoHasBall = '',
-    this.ballIsEntering = false,
+    this.entering = false,
+    this.exiting = true,
   });
 
   factory Player.fromJson(Map<String, dynamic> json) => _$PlayerFromJson(json);

@@ -14,7 +14,8 @@ Player _$PlayerFromJson(Map<String, dynamic> json) => Player(
       launch: json['launch'] as bool? ?? false,
       dropTime: json['dropTime'] as int? ?? 2,
       whoHasBall: json['whoHasBall'] as String? ?? '',
-      ballIsEntering: json['ballIsEntering'] as bool? ?? false,
+      entering: json['entering'] as bool? ?? false,
+      exiting: json['exiting'] as bool? ?? true,
     );
 
 Map<String, dynamic> _$PlayerToJson(Player instance) => <String, dynamic>{
@@ -22,7 +23,8 @@ Map<String, dynamic> _$PlayerToJson(Player instance) => <String, dynamic>{
       'launch': instance.launch,
       'dropTime': instance.dropTime,
       'whoHasBall': instance.whoHasBall,
-      'ballIsEntering': instance.ballIsEntering,
+      'entering': instance.entering,
+      'exiting': instance.exiting,
       'posFromStart': instance.posFromStart,
       'xVel': instance.xVel,
       'yVel': instance.yVel,

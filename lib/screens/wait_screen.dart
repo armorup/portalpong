@@ -76,7 +76,6 @@ class _WaitScreenState extends State<WaitScreen> {
   void startLaunchListener(Stream<List<Player>> stream) {
     sub ??= stream.listen((players) {
       for (var player in players) {
-        print(player.launch);
         if (player.launch) {
           game.startGame();
           game.overlays.remove('wait');

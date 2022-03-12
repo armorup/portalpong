@@ -59,16 +59,19 @@ class PortalContactCallback extends ContactCallback<Portal, Ball> {
 
   @override
   void end(Portal a, Ball b, Contact contact) {
-    if (game.player!.ballIsEntering) {
-      game.player!.ballIsEntering = false;
+    if (game.player!.entering) {
+      game.player!.entering = false;
       return;
     }
 
-    game.player!.ballIsEntering = true;
-    game.player!.whoHasBall = a.owner.name;
-    game.player!.xVel = b.body.linearVelocity.x;
-    game.player!.yVel = b.body.linearVelocity.y;
-    net.client!.write(jsonEncode(game.player!.toJson()));
-    game.removeBall();
+    if (game.player!.exiting) {
+      game.player!.exiting = false;
+      game.player!.entering = true;
+      game.player!.whoHasBall = a.owner.name;
+      game.player!.xVel = b.body.linearVelocity.x;
+      game.player!.yVel = b.body.linearVelocity.y;
+      net.client!.write(jsonEncode(game.player!.toJson()));
+      game.removeBall();
+    }
   }
 }
