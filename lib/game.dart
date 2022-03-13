@@ -135,7 +135,7 @@ class PortalPongGame extends Forge2DGame with MultiTouchDragDetector {
 
     final boundaries = createBoundaries(this, top: topBoundary);
     boundaries.forEach(add);
-    final center = screenToWorld(camera.viewport.effectiveSize / 2);
+    final center = camera.screenToWorld(camera.viewport.effectiveSize / 2);
     paddle = Paddle(center - Vector2(0, 20));
 
     if (player!.whoHasBall == player!.name) {
@@ -146,8 +146,15 @@ class PortalPongGame extends Forge2DGame with MultiTouchDragDetector {
     }
   }
 
-  void removeBall() {
-    remove(ball);
+  void removeBall() => remove(ball);
+
+  /// Called when ball enters player's screen from portal
+  void enterBall(double posFromStart, Vector2 impulse) {
+    var portalPos = camera.worldToScreen(portal!.position);
+    var x = camera.viewport.effectiveSize.x / 2;
+    //portalPos.x + portal!.width * (1 - posFromStart);
+    var pos = camera.screenToWorld(Vector2(x, 0));
+    game.addBall(pos, impulse);
   }
 
   void addBall(Vector2 pos, Vector2 impulse) {

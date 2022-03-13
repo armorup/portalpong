@@ -9,22 +9,22 @@ class Player {
   int dropTime;
 
   String whoHasBall; // Which player has the ball?
-  bool entering; // is the ball entering the play area?
-  bool exiting;
+  String prevWhoHasBall; // Previous player who had ball
+  bool isEntering;
   double posFromStart;
   double xVel; // ball x velocity
   double yVel; // ball y velocity
 
   Player(
     this.name, {
+    this.isEntering = true,
     this.posFromStart = 0,
     this.xVel = 0,
     this.yVel = 0,
     this.launch = false,
-    this.dropTime = 2,
+    this.dropTime = 2000,
     this.whoHasBall = '',
-    this.entering = false,
-    this.exiting = true,
+    this.prevWhoHasBall = '',
   });
 
   factory Player.fromJson(Map<String, dynamic> json) => _$PlayerFromJson(json);

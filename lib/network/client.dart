@@ -57,29 +57,26 @@ class Client {
   /// Write game data
   //void writeGame(GameData data) => _wsClient.write(jsonEncode(data.toJson()));
 
-  /// Read Player data  from network
+  /// Read Player data from network
   void read(playerJson) {
     Player player = Player.fromJson(jsonDecode(playerJson));
-    player.dropTime = dropTime;
-    print(player.name);
-    playersList.updateList(player);
-    if (isHost) {
+    if (player.name == game.player!.name) return;
+    if (game.state == GameState.joining && isHost) {
       pingPlayers();
     }
+    if (game.player!.whoHasBall != player.whoHasBall) {
+      game.player!.whoHasBall = player.whoHasBall;
+    }
+    player.dropTime = dropTime;
+    playersList.updateList(player);
 
-    game.player!.whoHasBall = player.whoHasBall;
-    if (game.state == GameState.playing && game.portal != null) {
-      print('1');
-      if (game.player!.whoHasBall == game.player!.name) {
-        print('2');
-        var impulse = Vector2(-player.xVel, -player.yVel);
-        var x =
-            game.portal!.position.x + game.portal!.width * player.posFromStart;
-        var y = game.portal!.position.y;
-        var pos = Vector2(10, -10); //Vector2(x, y);
-        print('$pos:$impulse');
-        game.addBall(pos, impulse);
-      }
+    // Proceed only if game is playing or multiplayer
+    if (game.state != GameState.playing || game.portal == null) return;
+    print(player.name);
+
+    if (game.player!.whoHasBall == game.player!.name) {
+      var impulse = Vector2(-player.xVel, -player.yVel);
+      game.enterBall(player.posFromStart, impulse);
     }
   }
 

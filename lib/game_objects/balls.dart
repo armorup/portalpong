@@ -42,7 +42,7 @@ class Ball extends BodyComponent {
       ..type = BodyType.dynamic;
 
     body = world.createBody(bodyDef)..createFixture(fixtureDef);
-    body.applyLinearImpulse(_impulse);
+    body.applyLinearImpulse(_impulse * 1000);
     return body;
   }
 

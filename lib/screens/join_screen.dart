@@ -67,6 +67,7 @@ class JoinScreen extends StatelessWidget {
   Future<void> hostGame() async {
     net.server = Server();
     await net.server!.start();
+    game.player!.whoHasBall = game.player!.name;
     joinGame();
   }
 

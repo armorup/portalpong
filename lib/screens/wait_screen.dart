@@ -54,8 +54,9 @@ class _WaitScreenState extends State<WaitScreen> {
                       game.player!.launch = true;
                       // The player who clicks this button starts with ball
                       game.player!.whoHasBall = game.player!.name;
+                      game.player!.isEntering = false;
                       net.client!.write(jsonEncode(game.player!.toJson()));
-                      //game.player!.launch = false;
+                      game.player!.launch = false;
                       game.startGame();
                       game.overlays.remove('wait');
                     },

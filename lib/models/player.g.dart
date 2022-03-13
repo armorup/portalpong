@@ -12,10 +12,9 @@ Player _$PlayerFromJson(Map<String, dynamic> json) => Player(
       xVel: (json['xVel'] as num?)?.toDouble() ?? 0,
       yVel: (json['yVel'] as num?)?.toDouble() ?? 0,
       launch: json['launch'] as bool? ?? false,
-      dropTime: json['dropTime'] as int? ?? 2,
+      dropTime: json['dropTime'] as int? ?? 2000,
       whoHasBall: json['whoHasBall'] as String? ?? '',
-      entering: json['entering'] as bool? ?? false,
-      exiting: json['exiting'] as bool? ?? true,
+      prevWhoHasBall: json['prevWhoHasBall'] as String? ?? '',
     );
 
 Map<String, dynamic> _$PlayerToJson(Player instance) => <String, dynamic>{
@@ -23,8 +22,7 @@ Map<String, dynamic> _$PlayerToJson(Player instance) => <String, dynamic>{
       'launch': instance.launch,
       'dropTime': instance.dropTime,
       'whoHasBall': instance.whoHasBall,
-      'entering': instance.entering,
-      'exiting': instance.exiting,
+      'prevWhoHasBall': instance.prevWhoHasBall,
       'posFromStart': instance.posFromStart,
       'xVel': instance.xVel,
       'yVel': instance.yVel,

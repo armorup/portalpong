@@ -42,19 +42,18 @@ class WSServer {
   late HttpServer? http;
   late Handler handler;
   List<StreamSubscription> wsSubs = [];
-  List<WebSocketChannel> channels = [];
+  //List<WebSocketChannel> channels = [];
+  Map<int, WebSocketChannel> channels = {};
 
   WSServer() {
     handler = webSocketHandler((WebSocketChannel wsChannel) {
-      if (!channels.contains(wsChannel)) {
-        channels.add(wsChannel);
-      }
+      var hash = wsChannel.hashCode;
+      channels.putIfAbsent(hash, () => wsChannel);
       // broadcast every message heard to all other channels
       var wsSub = wsChannel.stream.listen((message) {
-        for (var channel in channels) {
-          if (channel != wsChannel) {
-            channel.sink.add(message);
-          }
+        for (var key in channels.keys) {
+          if (key == hash) continue;
+          channels[key]?.sink.add(message);
         }
         print("handler: $message");
       });
