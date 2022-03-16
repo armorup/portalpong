@@ -1,13 +1,17 @@
 import 'package:json_annotation/json_annotation.dart';
+import 'package:portalpong/models/ball_data.dart';
+import 'package:portalpong/models/player.dart';
 
 part 'game_data.g.dart';
 
-@JsonSerializable()
+@JsonSerializable(explicitToJson: true)
 class GameData {
-  String name; // player that has the ball
-  double x; // ball x velocity
-  double y; // ball y velocity
-  GameData({required this.name, required this.x, required this.y});
+  Player player;
+  BallData ballData;
+
+  GameData({
+    required this.player,
+  }) : ballData = BallData(curOwner: player.name);
 
   factory GameData.fromJson(Map<String, dynamic> json) =>
       _$GameDataFromJson(json);

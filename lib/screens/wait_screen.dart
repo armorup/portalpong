@@ -1,9 +1,9 @@
 import 'dart:async';
-import 'dart:convert';
 
 import 'package:avatars/avatars.dart';
 import 'package:flutter/material.dart';
 import 'package:portalpong/game.dart';
+import 'package:portalpong/main.dart';
 import 'package:portalpong/models/player.dart';
 import 'package:portalpong/network/network.dart';
 
@@ -31,7 +31,7 @@ class _WaitScreenState extends State<WaitScreen> {
             children: [
               StreamBuilder(
                   stream: stream,
-                  initialData: [game.player!],
+                  initialData: [data.player],
                   builder: (context, snapshot) {
                     if (snapshot.hasData) {
                       List<Player> players = snapshot.data as List<Player>;
@@ -51,14 +51,7 @@ class _WaitScreenState extends State<WaitScreen> {
               if (net.server != null)
                 ElevatedButton(
                     onPressed: () {
-                      game.player!.launch = true;
-                      // The player who clicks this button starts with ball
-                      game.player!.whoHasBall = game.player!.name;
-                      game.player!.isEntering = false;
-                      net.client!.write(jsonEncode(game.player!.toJson()));
-                      game.player!.launch = false;
-                      game.startGame();
-                      game.overlays.remove('wait');
+                      launch();
                     },
                     child: const Text('Launch!')),
               ElevatedButton(
@@ -94,6 +87,17 @@ class _WaitScreenState extends State<WaitScreen> {
     sub!.cancel();
     sub = null;
     super.dispose();
+  }
+
+  // called by host
+  void launch() {
+    data.player.launch = true;
+    // The host starts with ball
+    //data.balls.add(BallData(curOwner: data.player.name));
+    net.client!.write();
+    data.player.launch = false;
+    game.startGame();
+    game.overlays.remove('wait');
   }
 
   void cancel() async {

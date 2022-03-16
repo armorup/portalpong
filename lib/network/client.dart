@@ -3,27 +3,38 @@
 import 'dart:async';
 import 'dart:convert';
 
-import 'package:flame_forge2d/flame_forge2d.dart' hide Timer;
 import 'package:portalpong/game.dart';
-import 'package:portalpong/models/players_list.dart';
-import 'package:portalpong/network/network.dart';
+import 'package:portalpong/main.dart';
+import 'package:portalpong/models/ball_data.dart';
+import 'package:portalpong/models/game_data.dart';
 import 'package:portalpong/models/player.dart';
+import 'package:portalpong/models/stream_list.dart';
+import 'package:portalpong/network/network.dart';
 import 'package:portalpong/network/udpclient.dart';
 import 'package:portalpong/network/wsclient.dart';
 
 class Client {
   late WSClient _wsClient;
   late UDPClient _udpClient;
-  late PlayersList playersList;
-
+  late StreamList<Player> playersList;
+  late StreamList<BallData> ballDataList;
+  final Player player;
   final int dropTime = 2000;
 
   bool get isHost => net.server != null; // True if this is the host device
 
-  Client() {
-    playersList = PlayersList(initialPlayer: game.player!);
+  Client({required this.player}) {
     _wsClient = WSClient(callback: read);
     _udpClient = UDPClient(connectTo: _wsClient.connectTo);
+    _initPlayer();
+  }
+
+  /// Add player to list
+  void _initPlayer() {
+    playersList = StreamList(initialValue: player);
+    if (isHost) {
+      data.ballData.curOwner = player.name;
+    }
   }
 
   /// Start the client to begin joining process
@@ -34,15 +45,15 @@ class Client {
   }
 
   /// Start timers to poll and check if network player disconnected
-  void startTimers() {
+  void _startTimers() {
     Timer.periodic(
       const Duration(milliseconds: 500),
-      (timer) => write(jsonEncode(game.player!.toJson())),
+      (timer) => write(),
     );
 
     // If player has disconnected, drop them from list
     Timer.periodic(const Duration(milliseconds: 500), (timer) {
-      for (var player in playersList.players) {
+      for (var player in playersList.list) {
         player.dropTime -= 500;
         if (player.dropTime <= 0) {
           playersList.remove(player);
@@ -52,43 +63,45 @@ class Client {
   }
 
   /// Update network with Player
-  void write(playerJson) => _wsClient.write(playerJson);
+  void write() {
+    var json = jsonEncode(data.toJson());
+    _wsClient.write(json);
+  }
 
-  /// Write game data
-  //void writeGame(GameData data) => _wsClient.write(jsonEncode(data.toJson()));
+  /// Read data from network
+  void read(json) {
+    GameData netData = GameData.fromJson(jsonDecode(json));
+    print('reading: $json');
+    if (netData.player.name == player.name) return;
 
-  /// Read Player data from network
-  void read(playerJson) {
-    Player player = Player.fromJson(jsonDecode(playerJson));
-    if (player.name == game.player!.name) return;
-    if (game.state == GameState.joining && isHost) {
-      pingPlayers();
+    if (game.state == GameState.joining) {
+      // Host should update everyone if host receives a message
+      if (isHost) {
+        write();
+      } else {
+        // set everyone's balls to correct owners
+        data.ballData.curOwner = netData.ballData.curOwner;
+      }
+      data.player.dropTime = dropTime;
+      playersList.update(netData.player);
     }
-    if (game.player!.whoHasBall != player.whoHasBall) {
-      game.player!.whoHasBall = player.whoHasBall;
-    }
-    player.dropTime = dropTime;
-    playersList.updateList(player);
 
     // Proceed only if game is playing or multiplayer
     if (game.state != GameState.playing || game.portal == null) return;
-    print(player.name);
 
-    if (game.player!.whoHasBall == game.player!.name) {
-      var impulse = Vector2(-player.xVel, -player.yVel);
-      game.enterBall(player.posFromStart, impulse);
+    // update correct owners
+    if (data.ballData.curOwner != netData.ballData.curOwner) {
+      data.ballData.curOwner = netData.ballData.curOwner;
+      data.ballData.prevOwner = netData.ballData.prevOwner;
+      data.ballData.xVel = netData.ballData.xVel;
+      data.ballData.yVel = netData.ballData.yVel;
+      data.ballData.isEntering = true;
     }
-  }
 
-  /// Read game data
-  // void readGame(gameJson) {
-  //   GameData data = GameData.fromJson(jsonDecode(gameJson));
-  // }
-
-  /// Host should update other players of players list
-  void pingPlayers() {
-    for (var player in playersList.players) {
-      _wsClient.write(jsonEncode(player.toJson()));
+    // Add any balls that are entering owner's space
+    if (data.ballData.curOwner == data.player.name &&
+        data.ballData.isEntering) {
+      game.addBall(data.ballData);
     }
   }
 

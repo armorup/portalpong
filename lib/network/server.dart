@@ -55,7 +55,7 @@ class WSServer {
           if (key == hash) continue;
           channels[key]?.sink.add(message);
         }
-        print("handler: $message");
+        //print("handler: $message");
       });
       wsSubs.add(wsSub);
     });

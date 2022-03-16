@@ -1,11 +1,10 @@
-import 'dart:convert';
-
 import 'package:flame_forge2d/body_component.dart';
 import 'package:flame_forge2d/contact_callbacks.dart';
 import 'package:flame_forge2d/flame_forge2d.dart';
 import 'package:flutter/material.dart';
 import 'package:portalpong/game.dart';
 import 'package:portalpong/game_objects/balls.dart';
+import 'package:portalpong/main.dart';
 import 'package:portalpong/models/player.dart';
 import 'package:portalpong/network/network.dart';
 
@@ -59,18 +58,22 @@ class PortalContactCallback extends ContactCallback<Portal, Ball> {
 
   @override
   void end(Portal a, Ball b, Contact contact) {
-    if (a.owner.name == game.player!.prevWhoHasBall ||
-        game.player!.isEntering) {
-      game.player!.isEntering = false;
+    if (a.owner.name == b.ballData.prevOwner || b.ballData.isEntering) {
+      b.ballData.isEntering = false;
       return;
     }
 
-    game.removeBall();
-    game.player!.whoHasBall = a.owner.name;
-    game.player!.prevWhoHasBall = game.player!.name;
-    game.player!.xVel = b.body.linearVelocity.x;
-    game.player!.yVel = b.body.linearVelocity.y;
-    net.client!.write(jsonEncode(game.player!.toJson()));
-    game.player!.isEntering = true;
+    b.ballData.curOwner = a.owner.name;
+    b.ballData.prevOwner = data.player.name;
+    b.ballData.xVel = b.body.linearVelocity.x;
+    b.ballData.yVel = b.body.linearVelocity.y;
+    b.ballData.isEntering = true;
+
+    // update network ball data
+    if (data.ballData.id == b.ballData.id) {
+      data.ballData = b.ballData;
+    }
+    net.client!.write();
+    game.removeBall(b);
   }
 }

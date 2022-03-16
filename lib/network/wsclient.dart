@@ -3,7 +3,7 @@
 import 'dart:async';
 import 'dart:convert';
 
-import 'package:portalpong/game.dart';
+import 'package:portalpong/main.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
 
 /// Join websocket server
@@ -20,12 +20,12 @@ class WSClient {
     channel = WebSocketChannel.connect(Uri.parse('ws://$address:$port'));
     _sub = channel!.stream.asBroadcastStream().listen((json) => callback(json));
     // add current player
-    write(jsonEncode(game.player!.toJson()));
-    print('${game.player!.name} joined @$address:$port');
+    write(jsonEncode(data.toJson()));
+    print('${data.player.name} joined @$address:$port');
   }
 
   /// Write data to ws stream
-  void write(json) => channel!.sink.add(json);
+  void write(String json) => channel!.sink.add(json);
 
   void cancel() {
     _sub?.cancel();

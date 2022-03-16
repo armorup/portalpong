@@ -2,10 +2,10 @@ import 'package:flame_forge2d/body_component.dart';
 import 'package:flame_forge2d/flame_forge2d.dart';
 import 'package:flutter/material.dart' hide Draggable;
 import 'package:flame/palette.dart';
-import 'package:flame/components.dart';
-import 'package:flame/input.dart';
+import 'package:portalpong/models/ball_data.dart';
 
 class Ball extends BodyComponent {
+  BallData ballData;
   late Paint originalPaint;
   bool giveNudge = false;
   final double radius;
@@ -17,7 +17,8 @@ class Ball extends BodyComponent {
   final Paint _blue = BasicPalette.blue.paint();
   final Paint _black = BasicPalette.black.paint();
 
-  Ball(this._position, this._impulse, {this.radius = 2}) {
+  Ball(this._position, this._impulse,
+      {required this.ballData, this.radius = 2}) {
     originalPaint = randomPaint();
     paint = _black;
   }

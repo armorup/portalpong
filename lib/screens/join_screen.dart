@@ -1,6 +1,7 @@
 import 'package:avatars/avatars.dart';
 import 'package:flutter/material.dart';
 import 'package:portalpong/game.dart';
+import 'package:portalpong/main.dart';
 import 'package:portalpong/network/client.dart';
 import 'package:portalpong/network/network.dart';
 
@@ -28,7 +29,7 @@ class JoinScreen extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Avatar(
-                  name: game.player!.name,
+                  name: data.player.name,
                 ),
                 const SizedBox(height: 50),
                 ElevatedButton(
@@ -67,12 +68,11 @@ class JoinScreen extends StatelessWidget {
   Future<void> hostGame() async {
     net.server = Server();
     await net.server!.start();
-    game.player!.whoHasBall = game.player!.name;
     joinGame();
   }
 
   void joinGame() {
-    net.client = Client();
+    net.client = Client(player: data.player);
     net.client!.start();
     game.overlays.add('wait');
     game.overlays.remove('join');

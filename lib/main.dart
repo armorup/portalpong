@@ -1,10 +1,13 @@
+import 'package:faker/faker.dart';
 import 'package:flame/flame.dart';
 import 'package:flutter/material.dart';
 import 'package:portalpong/game.dart';
+import 'package:portalpong/models/game_data.dart';
+import 'package:portalpong/models/player.dart';
 
 // Single instance of player and game data here
-// late PlayerData playerData;
-// late GameData gameData;
+GameData data =
+    GameData(player: Player('Guest${random.integer(1000000, min: 100000)}'));
 
 ThemeData themeData = ThemeData(
   brightness: Brightness.light,

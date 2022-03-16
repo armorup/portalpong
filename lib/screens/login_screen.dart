@@ -2,6 +2,7 @@ import 'package:avatars/avatars.dart';
 import 'package:faker/faker.dart';
 import 'package:flutter/material.dart';
 import 'package:portalpong/game.dart';
+import 'package:portalpong/main.dart';
 import 'package:portalpong/models/player.dart';
 import 'package:portalpong/network/network.dart';
 
@@ -86,12 +87,10 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   void login(BuildContext context) {
-    // TODO: Valid player name?  New login?
-    game.player = Player(name);
+    data.player = Player(name);
     // Poll the network to get ip
     net.poll();
     game.overlays.add('join');
     game.overlays.remove('login');
-    //context.push('/join');
   }
 }

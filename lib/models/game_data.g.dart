@@ -7,13 +7,10 @@ part of 'game_data.dart';
 // **************************************************************************
 
 GameData _$GameDataFromJson(Map<String, dynamic> json) => GameData(
-      name: json['name'] as String,
-      x: (json['x'] as num).toDouble(),
-      y: (json['y'] as num).toDouble(),
-    );
+      player: Player.fromJson(json['player'] as Map<String, dynamic>),
+    )..ballData = BallData.fromJson(json['ballData'] as Map<String, dynamic>);
 
 Map<String, dynamic> _$GameDataToJson(GameData instance) => <String, dynamic>{
-      'name': instance.name,
-      'x': instance.x,
-      'y': instance.y,
+      'player': instance.player.toJson(),
+      'ballData': instance.ballData.toJson(),
     };
