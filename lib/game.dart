@@ -148,7 +148,7 @@ class PortalPongGame extends Forge2DGame with MultiTouchDragDetector {
     var x = camera.viewport.effectiveSize.x / 2;
     //portalPos.x + portal!.width * (1 - posFromStart);
     var pos = camera.screenToWorld(Vector2(x, 0));
-    var impulse = Vector2(-ballData.xVel, -ballData.yVel);
+    var impulse = -ballData.velocity;
     var ball = Ball(pos, impulse, ballData: ballData);
     balls.add(ball);
     add(ball);

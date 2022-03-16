@@ -58,21 +58,16 @@ class PortalContactCallback extends ContactCallback<Portal, Ball> {
 
   @override
   void end(Portal a, Ball b, Contact contact) {
-    if (a.owner.name == b.ballData.prevOwner || b.ballData.isEntering) {
+    if (a.owner.name == b.ballData.prevOwner && b.ballData.isEntering) {
       b.ballData.isEntering = false;
+      net.client!.ballDataList.update(b.ballData);
       return;
     }
+    data.ballData.curOwner = a.owner.name;
+    data.ballData.prevOwner = data.player.name;
+    data.ballData.velocity = b.body.linearVelocity;
+    data.ballData.isEntering = true;
 
-    b.ballData.curOwner = a.owner.name;
-    b.ballData.prevOwner = data.player.name;
-    b.ballData.xVel = b.body.linearVelocity.x;
-    b.ballData.yVel = b.body.linearVelocity.y;
-    b.ballData.isEntering = true;
-
-    // update network ball data
-    if (data.ballData.id == b.ballData.id) {
-      data.ballData = b.ballData;
-    }
     net.client!.write();
     game.removeBall(b);
   }

@@ -72,7 +72,6 @@ class Client {
   /// Read data from network
   void read(json) {
     GameData netData = GameData.fromJson(jsonDecode(json));
-    print('reading: $json');
     if (netData.player.name == player.name) return;
 
     if (game.state == GameState.joining) {
@@ -90,13 +89,12 @@ class Client {
     // Proceed only if game is playing or multiplayer
     if (game.state == GameState.playing && game.portal != null) {
       // update correct owners
-      if (data.ballData.curOwner != netData.ballData.curOwner) {
-        data.ballData.curOwner = netData.ballData.curOwner;
-        data.ballData.prevOwner = netData.ballData.prevOwner;
-        data.ballData.xVel = netData.ballData.xVel;
-        data.ballData.yVel = netData.ballData.yVel;
-        data.ballData.isEntering = true;
-      }
+      // if (data.ballData.curOwner != netData.ballData.curOwner) {
+      //   data.ballData.curOwner = netData.ballData.curOwner;
+      //   data.ballData.prevOwner = netData.ballData.prevOwner;
+      //   data.ballData.velocity = netData.ballData.velocity;
+      //   data.ballData.isEntering = true;
+      // }
       ballDataList.update(netData.ballData);
     }
   }

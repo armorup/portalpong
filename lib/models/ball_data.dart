@@ -1,3 +1,4 @@
+import 'package:flame_forge2d/flame_forge2d.dart';
 import 'package:json_annotation/json_annotation.dart';
 import 'package:portalpong/models/stream_list.dart';
 import 'package:uuid/uuid.dart';
@@ -14,6 +15,7 @@ class BallData with HasId {
   double posFromStart;
   double xVel;
   double yVel;
+
   BallData(
       {required this.curOwner,
       this.prevOwner = '',
@@ -22,6 +24,12 @@ class BallData with HasId {
       this.xVel = 0,
       this.yVel = 0}) {
     id = const Uuid().v4();
+  }
+
+  Vector2 get velocity => Vector2(xVel, yVel);
+  set velocity(Vector2 vect) {
+    xVel = vect.x;
+    yVel = vect.y;
   }
 
   factory BallData.fromJson(Map<String, dynamic> json) =>
