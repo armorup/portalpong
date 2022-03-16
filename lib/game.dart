@@ -62,14 +62,11 @@ class PortalPongGame extends Forge2DGame with MultiTouchDragDetector {
   late Paddle paddle;
   Portal? portal;
   GameState state = GameState.joining;
-
-  List balls = [];
-
   late SpriteComponent background;
   bool dragValid = false;
-
   late Body groundBody;
   MouseJoint? mouseJoint;
+  List<Ball> balls = [];
 
   @override
   Future<void> onLoad() async {
@@ -85,11 +82,18 @@ class PortalPongGame extends Forge2DGame with MultiTouchDragDetector {
       add(portal!);
     }
     state = GameState.playing;
+    startBallListener();
   }
 
-  void updateBalls() {
+  void startBallListener() {
     var sub = net.client!.ballDataList.stream.listen((ballDataList) {
-      for (var ballData in ballDataList) {}
+      for (var ballData in ballDataList) {
+        if (ballData.curOwner == data.player.name) {
+          if (ballData.isEntering) {
+            addBall(ballData);
+          }
+        }
+      }
     });
   }
 
@@ -126,7 +130,7 @@ class PortalPongGame extends Forge2DGame with MultiTouchDragDetector {
     if (data.ballData.curOwner == data.player.name) {
       data.ballData.xVel = 0;
       data.ballData.yVel = 0;
-      var ball = Ball(center, Vector2.zero(), ballData: data.ballData);
+      Ball ball = Ball(center, Vector2.zero(), ballData: data.ballData);
       balls.add(ball);
       add(ball);
     }

@@ -26,12 +26,13 @@ class Client {
   Client({required this.player}) {
     _wsClient = WSClient(callback: read);
     _udpClient = UDPClient(connectTo: _wsClient.connectTo);
-    _initPlayer();
+    _init();
   }
 
   /// Add player to list
-  void _initPlayer() {
+  void _init() {
     playersList = StreamList(initialValue: player);
+    ballDataList = StreamList(initialValue: data.ballData);
     if (isHost) {
       data.ballData.curOwner = player.name;
     }
@@ -75,11 +76,11 @@ class Client {
     if (netData.player.name == player.name) return;
 
     if (game.state == GameState.joining) {
-      // Host should update everyone if host receives a message
+      // Host should update everyone when someone joins
       if (isHost) {
         write();
       } else {
-        // set everyone's balls to correct owners
+        // set everyone's ball owner to be the host player
         data.ballData.curOwner = netData.ballData.curOwner;
       }
       data.player.dropTime = dropTime;
@@ -87,21 +88,16 @@ class Client {
     }
 
     // Proceed only if game is playing or multiplayer
-    if (game.state != GameState.playing || game.portal == null) return;
-
-    // update correct owners
-    if (data.ballData.curOwner != netData.ballData.curOwner) {
-      data.ballData.curOwner = netData.ballData.curOwner;
-      data.ballData.prevOwner = netData.ballData.prevOwner;
-      data.ballData.xVel = netData.ballData.xVel;
-      data.ballData.yVel = netData.ballData.yVel;
-      data.ballData.isEntering = true;
-    }
-
-    // Add any balls that are entering owner's space
-    if (data.ballData.curOwner == data.player.name &&
-        data.ballData.isEntering) {
-      game.addBall(data.ballData);
+    if (game.state == GameState.playing && game.portal != null) {
+      // update correct owners
+      if (data.ballData.curOwner != netData.ballData.curOwner) {
+        data.ballData.curOwner = netData.ballData.curOwner;
+        data.ballData.prevOwner = netData.ballData.prevOwner;
+        data.ballData.xVel = netData.ballData.xVel;
+        data.ballData.yVel = netData.ballData.yVel;
+        data.ballData.isEntering = true;
+      }
+      ballDataList.update(netData.ballData);
     }
   }
 

@@ -1,8 +1,13 @@
 import 'dart:async';
 
+abstract class HasId {
+  String get id;
+  set id(String id);
+}
+
 /// List of Players or Balls for example
-class StreamList<T> {
-  final _list = <int, T>{};
+class StreamList<T extends HasId> {
+  final _list = <String, T>{};
   final _controller = StreamController.broadcast();
   List<T> get list => _list.values.toList();
 
@@ -17,7 +22,7 @@ class StreamList<T> {
 
   void update(T value) {
     _list.update(
-      value.hashCode,
+      value.id,
       (val) => value,
       ifAbsent: () => value,
     );
@@ -32,6 +37,6 @@ class StreamList<T> {
 
   void _init(T value) {
     _list.clear();
-    _list.putIfAbsent(value.hashCode, () => value);
+    _list.putIfAbsent(value.id, () => value);
   }
 }

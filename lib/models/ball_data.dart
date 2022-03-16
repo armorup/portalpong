@@ -1,10 +1,12 @@
 import 'package:json_annotation/json_annotation.dart';
+import 'package:portalpong/models/stream_list.dart';
 import 'package:uuid/uuid.dart';
 
 part 'ball_data.g.dart';
 
 @JsonSerializable(explicitToJson: true)
-class BallData {
+class BallData with HasId {
+  @override
   late String id;
   String curOwner;
   String prevOwner;
