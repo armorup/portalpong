@@ -7,8 +7,8 @@ part of 'ball_data.dart';
 // **************************************************************************
 
 BallData _$BallDataFromJson(Map<String, dynamic> json) => BallData(
-      curOwner: json['curOwner'] as String,
-      prevOwner: json['prevOwner'] as String? ?? '',
+      curOwnerId: json['curOwnerId'] as String,
+      prevOwnerId: json['prevOwnerId'] as String? ?? '',
       isEntering: json['isEntering'] as bool? ?? false,
       posFromStart: (json['posFromStart'] as num?)?.toDouble() ?? 0,
       xVel: (json['xVel'] as num?)?.toDouble() ?? 0,
@@ -17,8 +17,8 @@ BallData _$BallDataFromJson(Map<String, dynamic> json) => BallData(
 
 Map<String, dynamic> _$BallDataToJson(BallData instance) => <String, dynamic>{
       'id': instance.id,
-      'curOwner': instance.curOwner,
-      'prevOwner': instance.prevOwner,
+      'curOwnerId': instance.curOwnerId,
+      'prevOwnerId': instance.prevOwnerId,
       'isEntering': instance.isEntering,
       'posFromStart': instance.posFromStart,
       'xVel': instance.xVel,

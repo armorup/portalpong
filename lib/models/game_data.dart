@@ -11,7 +11,7 @@ class GameData {
 
   GameData({
     required this.player,
-  }) : ballData = BallData(curOwner: player.name);
+  }) : ballData = BallData(curOwnerId: player.id);
 
   factory GameData.fromJson(Map<String, dynamic> json) =>
       _$GameDataFromJson(json);

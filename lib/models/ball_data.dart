@@ -9,16 +9,16 @@ part 'ball_data.g.dart';
 class BallData with HasId {
   @override
   late String id;
-  String curOwner;
-  String prevOwner;
+  String curOwnerId;
+  String prevOwnerId;
   bool isEntering;
   double posFromStart;
   double xVel;
   double yVel;
 
   BallData(
-      {required this.curOwner,
-      this.prevOwner = '',
+      {required this.curOwnerId,
+      this.prevOwnerId = '',
       this.isEntering = false,
       this.posFromStart = 0,
       this.xVel = 0,
@@ -26,6 +26,7 @@ class BallData with HasId {
     id = const Uuid().v4();
   }
 
+  @JsonKey(ignore: true)
   Vector2 get velocity => Vector2(xVel, yVel);
   set velocity(Vector2 vect) {
     xVel = vect.x;

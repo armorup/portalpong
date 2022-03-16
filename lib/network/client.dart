@@ -34,7 +34,7 @@ class Client {
     playersList = StreamList(initialValue: player);
     ballDataList = StreamList(initialValue: data.ballData);
     if (isHost) {
-      data.ballData.curOwner = player.name;
+      data.ballData.curOwnerId = player.id;
     }
   }
 
@@ -72,7 +72,7 @@ class Client {
   /// Read data from network
   void read(json) {
     GameData netData = GameData.fromJson(jsonDecode(json));
-    if (netData.player.name == player.name) return;
+    if (netData.player.id == player.id) return;
 
     if (game.state == GameState.joining) {
       // Host should update everyone when someone joins
@@ -80,7 +80,7 @@ class Client {
         write();
       } else {
         // set everyone's ball owner to be the host player
-        data.ballData.curOwner = netData.ballData.curOwner;
+        data.ballData.curOwnerId = netData.ballData.curOwnerId;
       }
       data.player.dropTime = dropTime;
       playersList.update(netData.player);
@@ -88,13 +88,6 @@ class Client {
 
     // Proceed only if game is playing or multiplayer
     if (game.state == GameState.playing && game.portal != null) {
-      // update correct owners
-      // if (data.ballData.curOwner != netData.ballData.curOwner) {
-      //   data.ballData.curOwner = netData.ballData.curOwner;
-      //   data.ballData.prevOwner = netData.ballData.prevOwner;
-      //   data.ballData.velocity = netData.ballData.velocity;
-      //   data.ballData.isEntering = true;
-      // }
       ballDataList.update(netData.ballData);
     }
   }

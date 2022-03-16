@@ -10,15 +10,13 @@ class Ball extends BodyComponent {
   bool giveNudge = false;
   final double radius;
   final Vector2 _position;
-  final Vector2 _impulse;
   double _timeSinceNudge = 0.0;
   static const double _minNudgeRest = 2.0;
 
   final Paint _blue = BasicPalette.blue.paint();
   final Paint _black = BasicPalette.black.paint();
 
-  Ball(this._position, this._impulse,
-      {required this.ballData, this.radius = 2}) {
+  Ball(this._position, {required this.ballData, this.radius = 2}) {
     originalPaint = randomPaint();
     paint = _black;
   }
@@ -43,7 +41,7 @@ class Ball extends BodyComponent {
       ..type = BodyType.dynamic;
 
     body = world.createBody(bodyDef)..createFixture(fixtureDef);
-    body.applyLinearImpulse(_impulse * 1000);
+    body.applyLinearImpulse(ballData.velocity * 1000);
     return body;
   }
 

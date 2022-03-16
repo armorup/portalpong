@@ -86,9 +86,9 @@ class PortalPongGame extends Forge2DGame with MultiTouchDragDetector {
   }
 
   void startBallListener() {
-    var sub = net.client!.ballDataList.stream.listen((ballDataList) {
+    net.client!.ballDataList.stream.listen((ballDataList) {
       for (var ballData in ballDataList) {
-        if (ballData.curOwner == data.player.name) {
+        if (ballData.curOwnerId == data.player.id) {
           if (ballData.isEntering) {
             addBall(ballData);
           }
@@ -109,7 +109,7 @@ class PortalPongGame extends Forge2DGame with MultiTouchDragDetector {
     if (players.length > 1) {
       topBoundary = false;
       var portalOwner = net.client!.playersList.list
-          .firstWhere((other) => other.name != data.player.name);
+          .firstWhere((other) => other.id != data.player.id);
       // Add opponent portals
       var portalPos = screenToWorld(Vector2(0, 30));
       var portalwidth = screenToWorld(camera.viewport.effectiveSize).x;
@@ -127,16 +127,15 @@ class PortalPongGame extends Forge2DGame with MultiTouchDragDetector {
     paddle = Paddle(center - Vector2(0, 20));
 
     // Add ball to game
-    if (data.ballData.curOwner == data.player.name) {
-      data.ballData.xVel = 0;
-      data.ballData.yVel = 0;
-      Ball ball = Ball(center, Vector2.zero(), ballData: data.ballData);
+    if (data.ballData.curOwnerId == data.player.id) {
+      data.ballData.velocity = Vector2.zero();
+      Ball ball = Ball(center, ballData: data.ballData);
       balls.add(ball);
       add(ball);
     }
   }
 
-  /// remove ball associated with this data
+  /// remove ball
   void removeBall(Ball ball) {
     balls.remove(ball); // remove from list
     remove(ball); // remove from game
@@ -148,8 +147,7 @@ class PortalPongGame extends Forge2DGame with MultiTouchDragDetector {
     var x = camera.viewport.effectiveSize.x / 2;
     //portalPos.x + portal!.width * (1 - posFromStart);
     var pos = camera.screenToWorld(Vector2(x, 0));
-    var impulse = -ballData.velocity;
-    var ball = Ball(pos, impulse, ballData: ballData);
+    var ball = Ball(pos, ballData: ballData);
     balls.add(ball);
     add(ball);
   }
