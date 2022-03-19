@@ -3,6 +3,8 @@ import 'package:flame_forge2d/flame_forge2d.dart';
 import 'package:flutter/material.dart' hide Draggable;
 import 'package:flame/palette.dart';
 
+const int playerGroup = -1;
+
 class Paddle extends BodyComponent {
   final double radius;
   Vector2 position;
@@ -29,7 +31,7 @@ class Paddle extends BodyComponent {
     fixtureDef
       ..restitution = 0.5
       ..density = 30.0
-      ..filter.groupIndex = -1
+      ..filter.groupIndex = playerGroup
       ..friction = 1.0;
     final bodyDef = BodyDef()
       // To be able to determine object in collision

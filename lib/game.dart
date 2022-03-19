@@ -6,6 +6,7 @@ import 'package:flame_forge2d/flame_forge2d.dart' hide Timer;
 import 'package:flame_forge2d/forge2d_game.dart';
 import 'package:flutter/material.dart' hide Draggable;
 import 'package:flame/game.dart';
+import 'package:portalpong/game_objects/animal.dart';
 import 'package:portalpong/game_objects/balls.dart';
 import 'package:portalpong/game_objects/paddle.dart';
 import 'package:portalpong/game_objects/portal.dart';
@@ -67,6 +68,8 @@ class PortalPongGame extends Forge2DGame with MultiTouchDragDetector {
   late Body groundBody;
   MouseJoint? mouseJoint;
   List<Ball> balls = [];
+  late Animal animal;
+  late TextComponent scoreText;
 
   @override
   Future<void> onLoad() async {
@@ -77,7 +80,9 @@ class PortalPongGame extends Forge2DGame with MultiTouchDragDetector {
   void startGame() async {
     await setup();
     add(background);
+    add(animal);
     add(paddle);
+    add(scoreText);
     if (portal != null) {
       add(portal!);
     }
@@ -85,6 +90,7 @@ class PortalPongGame extends Forge2DGame with MultiTouchDragDetector {
     startBallListener();
   }
 
+  /// Listen for ball changes from stream
   void startBallListener() {
     net.client!.ballDataList.stream.listen((ballDataList) {
       for (var ballData in ballDataList) {
@@ -97,6 +103,11 @@ class PortalPongGame extends Forge2DGame with MultiTouchDragDetector {
     });
   }
 
+  void updateScore(String text) {
+    scoreText.text = text;
+  }
+
+  // Setup the game when game starts
   Future<void> setup() async {
     // Background
     final bgSprite = await Sprite.load('background.png');
@@ -125,7 +136,10 @@ class PortalPongGame extends Forge2DGame with MultiTouchDragDetector {
     boundaries.forEach(add);
     final center = camera.screenToWorld(camera.viewport.effectiveSize / 2);
     paddle = Paddle(center - Vector2(0, 20));
+    animal = Animal(center - Vector2(0, 25));
+    addContactCallback(AnimalContactCallback());
 
+    scoreText = TextComponent(text: animal.lives.toString());
     // Add ball to game
     if (data.ballData.curOwnerId == data.player.id) {
       data.ballData.velocity = Vector2.zero();
@@ -133,6 +147,29 @@ class PortalPongGame extends Forge2DGame with MultiTouchDragDetector {
       balls.add(ball);
       add(ball);
     }
+  }
+
+  /// Call when game is over
+  void onGameOver() {
+    // Some timer delay
+    reset();
+    overlays.add('join');
+  }
+
+  /// reset game
+  void reset() async {
+    for (var ball in balls) {
+      remove(ball);
+    }
+    balls.clear();
+    if (portal != null) {
+      remove(portal!);
+    }
+    remove(animal);
+    remove(paddle);
+    remove(background);
+    await net.client!.cancel();
+    await net.server?.cancel();
   }
 
   /// remove ball

@@ -16,13 +16,14 @@ class BallData with HasId {
   double xVel;
   double yVel;
 
-  BallData(
-      {required this.curOwnerId,
-      this.prevOwnerId = '',
-      this.isEntering = false,
-      this.posFromStart = 0,
-      this.xVel = 0,
-      this.yVel = 0}) {
+  BallData({
+    required this.curOwnerId,
+    this.prevOwnerId = '',
+    this.isEntering = false,
+    this.posFromStart = 0,
+    this.xVel = 0,
+    this.yVel = 0,
+  }) {
     id = const Uuid().v4();
   }
 

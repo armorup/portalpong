@@ -46,22 +46,22 @@ class Client {
   }
 
   /// Start timers to poll and check if network player disconnected
-  void _startTimers() {
-    Timer.periodic(
-      const Duration(milliseconds: 500),
-      (timer) => write(),
-    );
+  // void _startTimers() {
+  //   Timer.periodic(
+  //     const Duration(milliseconds: 500),
+  //     (timer) => write(),
+  //   );
 
-    // If player has disconnected, drop them from list
-    Timer.periodic(const Duration(milliseconds: 500), (timer) {
-      for (var player in playersList.list) {
-        player.dropTime -= 500;
-        if (player.dropTime <= 0) {
-          playersList.remove(player);
-        }
-      }
-    });
-  }
+  //   // If player has disconnected, drop them from list
+  //   Timer.periodic(const Duration(milliseconds: 500), (timer) {
+  //     for (var player in playersList.list) {
+  //       player.dropTime -= 500;
+  //       if (player.dropTime <= 0) {
+  //         playersList.remove(player);
+  //       }
+  //     }
+  //   });
+  // }
 
   /// Update network with Player
   void write() {
