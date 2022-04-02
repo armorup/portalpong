@@ -1,6 +1,6 @@
 import 'package:flame_forge2d/flame_forge2d.dart';
 import 'package:json_annotation/json_annotation.dart';
-import 'package:portalpong/models/stream_list.dart';
+import 'package:portalpong/data/models/stream_list.dart';
 import 'package:uuid/uuid.dart';
 
 part 'ball_data.g.dart';

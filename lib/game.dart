@@ -6,19 +6,19 @@ import 'package:flame_forge2d/flame_forge2d.dart' hide Timer;
 import 'package:flame_forge2d/forge2d_game.dart';
 import 'package:flutter/material.dart' hide Draggable;
 import 'package:flame/game.dart';
-import 'package:portalpong/game_objects/animal.dart';
-import 'package:portalpong/game_objects/balls.dart';
-import 'package:portalpong/game_objects/paddle.dart';
-import 'package:portalpong/game_objects/portal.dart';
+import 'package:portalpong/data/models/ball_data.dart';
 import 'package:portalpong/main.dart';
-import 'package:portalpong/models/ball_data.dart';
 import 'package:portalpong/network/network.dart';
-import 'package:portalpong/screens/join_screen.dart';
-import 'package:portalpong/screens/login_screen.dart';
-import 'package:portalpong/screens/wait_screen.dart';
-import 'game_objects/boundaries.dart';
+import 'package:portalpong/presentation/game_objects/animal.dart';
+import 'package:portalpong/presentation/game_objects/balls.dart';
+import 'package:portalpong/presentation/game_objects/boundaries.dart';
+import 'package:portalpong/presentation/game_objects/paddle.dart';
+import 'package:portalpong/presentation/game_objects/portal.dart';
 import 'package:flame/components.dart';
 import 'package:flame/input.dart';
+import 'package:portalpong/presentation/pages/join_screen.dart';
+import 'package:portalpong/presentation/pages/login_screen.dart';
+import 'package:portalpong/presentation/pages/wait_screen.dart';
 
 /// One instance of the game
 PortalPongGame game = PortalPongGame();

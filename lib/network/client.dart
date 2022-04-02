@@ -3,12 +3,12 @@
 import 'dart:async';
 import 'dart:convert';
 
+import 'package:portalpong/data/models/ball_data.dart';
+import 'package:portalpong/data/models/game_data.dart';
+import 'package:portalpong/data/models/player.dart';
+import 'package:portalpong/data/models/stream_list.dart';
 import 'package:portalpong/game.dart';
 import 'package:portalpong/main.dart';
-import 'package:portalpong/models/ball_data.dart';
-import 'package:portalpong/models/game_data.dart';
-import 'package:portalpong/models/player.dart';
-import 'package:portalpong/models/stream_list.dart';
 import 'package:portalpong/network/network.dart';
 import 'package:portalpong/network/udpclient.dart';
 import 'package:portalpong/network/wsclient.dart';

@@ -4,8 +4,8 @@ import 'package:flame_forge2d/flame_forge2d.dart';
 import 'package:flutter/material.dart' hide Draggable;
 import 'package:flame/palette.dart';
 import 'package:portalpong/game.dart';
-import 'package:portalpong/game_objects/balls.dart';
-import 'package:portalpong/game_objects/paddle.dart';
+import 'package:portalpong/presentation/game_objects/balls.dart';
+import 'package:portalpong/presentation/game_objects/paddle.dart';
 
 class Animal extends BodyComponent {
   int lives;

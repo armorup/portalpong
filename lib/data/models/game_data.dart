@@ -1,6 +1,6 @@
 import 'package:json_annotation/json_annotation.dart';
-import 'package:portalpong/models/ball_data.dart';
-import 'package:portalpong/models/player.dart';
+import 'package:portalpong/data/models/ball_data.dart';
+import 'package:portalpong/data/models/player.dart';
 
 part 'game_data.g.dart';
 

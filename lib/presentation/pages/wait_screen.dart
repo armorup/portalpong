@@ -2,9 +2,9 @@ import 'dart:async';
 
 import 'package:avatars/avatars.dart';
 import 'package:flutter/material.dart';
+import 'package:portalpong/data/models/player.dart';
 import 'package:portalpong/game.dart';
 import 'package:portalpong/main.dart';
-import 'package:portalpong/models/player.dart';
 import 'package:portalpong/network/network.dart';
 
 class WaitScreen extends StatefulWidget {

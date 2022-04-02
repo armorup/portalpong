@@ -4,8 +4,7 @@ import 'package:portalpong/game.dart';
 import 'package:portalpong/main.dart';
 import 'package:portalpong/network/client.dart';
 import 'package:portalpong/network/network.dart';
-
-import '../network/server.dart';
+import 'package:portalpong/network/server.dart';
 
 class JoinScreen extends StatelessWidget {
   const JoinScreen({required this.game, Key? key}) : super(key: key);
