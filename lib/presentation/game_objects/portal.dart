@@ -2,10 +2,10 @@ import 'package:flame_forge2d/body_component.dart';
 import 'package:flame_forge2d/contact_callbacks.dart';
 import 'package:flame_forge2d/flame_forge2d.dart';
 import 'package:flutter/material.dart';
-import 'package:portalpong/game.dart';
-import 'package:portalpong/main.dart';
-import 'package:portalpong/network/network.dart';
-import 'package:portalpong/presentation/game_objects/balls.dart';
+import '../../domain/network/network.dart';
+import '../../game.dart';
+import '../../main.dart';
+import 'balls.dart';
 
 import '../../data/models/player.dart';
 

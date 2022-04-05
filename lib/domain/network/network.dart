@@ -1,9 +1,9 @@
 import 'dart:io';
 
 import 'package:network_info_plus/network_info_plus.dart';
-import 'package:portalpong/network/server.dart';
 
 import 'client.dart';
+import 'server.dart';
 
 final net = Network();
 // For udp join request and response

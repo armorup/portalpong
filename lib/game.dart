@@ -7,8 +7,8 @@ import 'package:flame_forge2d/forge2d_game.dart';
 import 'package:flutter/material.dart' hide Draggable;
 import 'package:flame/game.dart';
 import 'package:portalpong/data/models/ball_data.dart';
+import 'package:portalpong/domain/network/network.dart';
 import 'package:portalpong/main.dart';
-import 'package:portalpong/network/network.dart';
 import 'package:portalpong/presentation/game_objects/animal.dart';
 import 'package:portalpong/presentation/game_objects/balls.dart';
 import 'package:portalpong/presentation/game_objects/boundaries.dart';
@@ -16,15 +16,16 @@ import 'package:portalpong/presentation/game_objects/paddle.dart';
 import 'package:portalpong/presentation/game_objects/portal.dart';
 import 'package:flame/components.dart';
 import 'package:flame/input.dart';
-import 'package:portalpong/presentation/pages/join_screen.dart';
-import 'package:portalpong/presentation/pages/login_screen.dart';
-import 'package:portalpong/presentation/pages/wait_screen.dart';
+
+import 'presentation/screens/join_screen.dart';
+import 'presentation/screens/login_screen.dart';
+import 'presentation/screens/wait_screen/wait_screen.dart';
 
 /// One instance of the game
 PortalPongGame game = PortalPongGame();
 
-class GameLoader extends StatelessWidget {
-  const GameLoader({Key? key}) : super(key: key);
+class GameScreen extends StatelessWidget {
+  const GameScreen({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {

@@ -1,7 +1,7 @@
+import 'package:flame/palette.dart';
 import 'package:flame_forge2d/body_component.dart';
 import 'package:flame_forge2d/flame_forge2d.dart';
 import 'package:flutter/material.dart' hide Draggable;
-import 'package:flame/palette.dart';
 
 import '../../data/models/ball_data.dart';
 

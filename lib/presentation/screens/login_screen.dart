@@ -1,10 +1,11 @@
 import 'package:avatars/avatars.dart';
 import 'package:faker/faker.dart';
 import 'package:flutter/material.dart';
-import 'package:portalpong/data/models/player.dart';
-import 'package:portalpong/game.dart';
-import 'package:portalpong/main.dart';
-import 'package:portalpong/network/network.dart';
+
+import '../../data/models/player.dart';
+import '../../domain/network/network.dart';
+import '../../game.dart';
+import '../../main.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({required this.game, Key? key}) : super(key: key);

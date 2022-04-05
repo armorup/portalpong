@@ -1,7 +1,8 @@
 import 'package:faker/faker.dart';
 import 'package:json_annotation/json_annotation.dart';
-import 'package:portalpong/data/models/stream_list.dart';
 import 'package:uuid/uuid.dart';
+
+import 'stream_list.dart';
 
 part 'player.g.dart';
 

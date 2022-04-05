@@ -1,10 +1,10 @@
 import 'package:avatars/avatars.dart';
 import 'package:flutter/material.dart';
-import 'package:portalpong/game.dart';
-import 'package:portalpong/main.dart';
-import 'package:portalpong/network/client.dart';
-import 'package:portalpong/network/network.dart';
-import 'package:portalpong/network/server.dart';
+import '../../domain/network/client.dart';
+import '../../domain/network/network.dart';
+import '../../domain/network/server.dart';
+import '../../game.dart';
+import '../../main.dart';
 
 class JoinScreen extends StatelessWidget {
   const JoinScreen({required this.game, Key? key}) : super(key: key);
@@ -71,8 +71,8 @@ class JoinScreen extends StatelessWidget {
   }
 
   void joinGame() {
-    net.client = Client(player: data.player);
-    net.client!.start();
+    // net.client = Client(player: data.player);
+    // net.client!.start();
     game.overlays.add('wait');
     game.overlays.remove('join');
   }

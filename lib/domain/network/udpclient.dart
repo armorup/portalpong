@@ -3,7 +3,7 @@
 import 'dart:async';
 import 'dart:io';
 
-import 'package:portalpong/network/network.dart';
+import 'package:portalpong/domain/network/network.dart';
 
 /// Client for joining an existing local server
 class UDPClient {
